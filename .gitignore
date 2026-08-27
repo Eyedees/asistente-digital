@@ -1,0 +1,13 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+
+#La gente no puede acceder a la clave API, por lo que en caso de subir este proyecto a Github (que teniendo en cuenta que este proyecto es para rellenar mi portfolio de informático debería) tendré que asegurar que la clave sea accesible sólo para mí, para ello tengo que evitar que el archivo en el que está la clave se pueda subir a github
+
+#.env es el archivo de entorno (environment) en el que tengo la clave API
+.env
+
+#también tendré que prescindir de carpetas como la del entorno virtual (ya que corresponde a las librerías licales para el proyecto que cada uno querrá/deberá utilizar, puede tener un tamaño considerable y con un requierements.txt que cree cualquiera puede copiar mi venv)
+venv/
+
+#así como las carpetas y archivos caché generados por python cada que se ejecuta el script (cada vez quea alguien vaya a ejecutar el asistente tendrá estas carpetas y archivos)
+__pycache__/
+*.pyc
