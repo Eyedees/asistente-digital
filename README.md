@@ -30,7 +30,7 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 1. Clona el repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/asistente-digital.git
+   git clone https://github.com/Eyedees/asistente-digital.git
    cd asistente-digital
    ```
 
