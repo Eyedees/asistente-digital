@@ -1,0 +1,1 @@
+#chat por texto que ya existe en main.py, pero se puede mover a este archivo si se desea
