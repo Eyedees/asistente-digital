@@ -11,6 +11,7 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 - ✂️ Contexto acotado a los últimos 20 mensajes para controlar tokens y latencia
 - 🔐 Gestión segura de credenciales mediante variables de entorno
 - 🧩 Arquitectura modular: configuración, cliente LLM, lógica de negocio e interfaz separados
+- 🧪 Suite de tests con `pytest` (sin llamadas reales a la API)
 - 🔄 Bucle de conversación continuo
 - 🤖 Modelo: `openai/gpt-oss-120b` (razonamiento + baja latencia vía Groq)
 
@@ -23,6 +24,7 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 | Modelo            | openai/gpt-oss-120b  |
 | Gestión de config | python-dotenv        |
 | Persistencia      | SQLite (stdlib)      |
+| Tests             | pytest               |
 
 ## Requisitos previos
 
@@ -92,6 +94,15 @@ El programa te pedirá que escribas tu petición. La respuesta se imprime en tie
 
 Para vaciar el historial desde la propia aplicación, escribe `borrar memoria` (pedirá confirmación).
 
+## Tests
+
+La suite usa `pytest` y no realiza llamadas reales a Groq: el modelo y la base de datos se sustituyen por dobles de prueba.
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
 ## Estructura del proyecto
 
 ```
@@ -106,8 +117,15 @@ asistente-digital/
 │   └── interfaces/
 │       ├── __init__.py
 │       └── cli.py           # Interfaz de línea de comandos
+├── tests/                   # Pruebas automatizadas
+│   ├── conftest.py
+│   ├── test_cli.py
+│   ├── test_core.py
+│   └── test_memoria.py
 ├── data/                    # Historial local en SQLite (se crea al ejecutar)
 ├── requirements.txt         # Dependencias del proyecto
+├── requirements-dev.txt     # Dependencias de desarrollo (pytest)
+├── pytest.ini               # Configuración de pytest
 ├── .env.example             # Plantilla de variables de entorno
 ├── .gitignore
 ├── LICENSE

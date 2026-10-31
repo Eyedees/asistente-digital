@@ -1,0 +1,2 @@
+# Dependencias de desarrollo (no necesarias para ejecutar la app)
+pytest==9.2.0

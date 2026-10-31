@@ -8,9 +8,10 @@ venv/
 .env.*
 !.env.example
 
-# Caché generado por Python
+# Caché generado por Python y pytest
 __pycache__/
 *.py[cod]
+.pytest_cache/
 
 # Editores y sistema operativo
 .vscode/

@@ -5,7 +5,7 @@ from jarvis.llm import generar
 from jarvis.memoria import (
     borrar_memoria as borrar_memoria_db,
     cargar_historial,
-    guardar_mensaje,
+    guardar_intercambio,
 )
 
 SYSTEM_PROMPT = (
@@ -37,9 +37,8 @@ class Asistente:
             ]
             self.historial = self.historial[-MAX_MENSAJES:]
 
-            #persiste el historial en la base de datos
-            guardar_mensaje("user", mensaje)
-            guardar_mensaje("assistant", respuesta)
+            #persiste el intercambio completo en una sola transacción
+            guardar_intercambio(mensaje, respuesta)
 
     def borrar_memoria(self):
         """Borra todos los mensajes del disco y de la memoria."""
