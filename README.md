@@ -7,7 +7,8 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 ## Características
 
 - 💬 Conversación por consola en tiempo real (respuesta en streaming, token a token)
-- 🧠 Memoria conversacional durante la sesión (historial recortado a los últimos 20 mensajes)
+- 🧠 Memoria conversacional persistente en SQLite (recupera el historial entre sesiones)
+- ✂️ Contexto acotado a los últimos 20 mensajes para controlar tokens y latencia
 - 🔐 Gestión segura de credenciales mediante variables de entorno
 - 🧩 Arquitectura modular: configuración, cliente LLM, lógica de negocio e interfaz separados
 - 🔄 Bucle de conversación continuo
@@ -21,6 +22,7 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 | Proveedor de LLM  | Groq API             |
 | Modelo            | openai/gpt-oss-120b  |
 | Gestión de config | python-dotenv        |
+| Persistencia      | SQLite (stdlib)      |
 
 ## Requisitos previos
 
@@ -86,7 +88,7 @@ Con el entorno virtual activado:
 python main.py
 ```
 
-El programa te pedirá que escribas tu petición. La respuesta se imprime en tiempo real. Escribe `salir` (o `exit`), o pulsa `Ctrl + C`, para terminar.
+El programa te pedirá que escribas tu petición. La respuesta se imprime en tiempo real. Escribe `salir` (o `exit`), o pulsa `Ctrl + C`, para terminar. El historial se conserva entre ejecuciones en `data/asistente.db`.
 
 ## Estructura del proyecto
 
@@ -97,10 +99,12 @@ asistente-digital/
 │   ├── __init__.py
 │   ├── config.py            # Carga y validación de variables de entorno
 │   ├── llm.py               # Cliente de Groq y streaming del modelo
-│   ├── core.py              # Lógica del asistente y memoria conversacional
+│   ├── core.py              # Lógica del asistente y gestión del historial
+│   ├── memoria.py           # Persistencia del historial en SQLite
 │   └── interfaces/
 │       ├── __init__.py
 │       └── cli.py           # Interfaz de línea de comandos
+├── data/                    # Historial local en SQLite (se crea al ejecutar)
 ├── requirements.txt         # Dependencias del proyecto
 ├── .env.example             # Plantilla de variables de entorno
 ├── .gitignore
@@ -112,9 +116,20 @@ asistente-digital/
 
 ```
 main.py → interfaces/cli.py → core.Asistente → llm.generar → Groq API
+                                    ↕
+                              memoria.py (SQLite)
 ```
 
-Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `core` construye el contexto y gestiona el historial, `llm` habla con el proveedor y `config` centraliza la configuración.
+Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `core` construye el contexto y gestiona el historial, `memoria` lo persiste en disco, `llm` habla con el proveedor y `config` centraliza la configuración.
+
+## Memoria
+
+El historial se guarda en `data/asistente.db`, una base de datos SQLite que se crea automáticamente la primera vez que se ejecuta el programa.
+
+- Al arrancar, se cargan en contexto los **últimos 20 mensajes**; el resto permanece en disco sin consumir tokens.
+- Cada intercambio (pregunta + respuesta) se guarda al terminar la respuesta.
+- `data/` está incluido en `.gitignore`: tus conversaciones no se versionan ni se suben al repositorio.
+- Para empezar de cero, elimina `data/asistente.db` (o llama a `borrar_memoria()` desde `jarvis.memoria`).
 
 ## Variables de entorno
 
@@ -127,7 +142,7 @@ Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `co
 ## Roadmap
 
 - [x] Fase 1 — Asistente de texto en consola con streaming
-- [x] Fase 2 — Memoria conversacional (historial de mensajes)
+- [x] Fase 2 — Memoria conversacional persistente (SQLite)
 - [ ] Fase 3 — Entrada por voz (speech-to-text)
 - [ ] Fase 4 — Salida por voz (text-to-speech)
 - [ ] Fase 5 — Interfaz gráfica
