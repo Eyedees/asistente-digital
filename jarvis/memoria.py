@@ -39,3 +39,8 @@ def guardar_mensaje(rol, contenido):
             "INSERT INTO mensajes (rol, contenido) VALUES (?, ?)",
             (rol, contenido),
         )
+
+def borrar_memoria():
+    """Borra todos los mensajes de la base de datos."""
+    with _conectar() as con:
+        con.execute("DELETE FROM mensajes")

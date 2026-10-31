@@ -2,6 +2,7 @@
 #NUNCA LLAMA A input() NI print(), SOLO DEVUELVE UN MENSAJE DE RESPUESTA
 
 from jarvis.llm import generar
+from jarvis.memoria import cargar_historial, guardar_mensaje
 
 SYSTEM_PROMPT = (
     "Eres un asistente personal. "
@@ -12,7 +13,7 @@ MAX_MENSAJES = 20  # par: cada intercambio son 2 mensajes (usuario + asistente)
 
 class Asistente:
     def __init__(self):
-        self.historial = []  # memoria de trabajo: dura mientras el programa esté abierto
+        self.historial = cargar_historial(MAX_MENSAJES) #carga el historial de mensajes desde la base de datos
 
     def responder(self, mensaje):
         mensajes = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -31,3 +32,7 @@ class Asistente:
                 {"role": "assistant", "content": respuesta},
             ]
             self.historial = self.historial[-MAX_MENSAJES:]
+
+            #persiste el historial en la base de datos
+            guardar_mensaje("user", mensaje)
+            guardar_mensaje("assistant", respuesta)
