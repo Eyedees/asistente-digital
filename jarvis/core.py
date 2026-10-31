@@ -2,7 +2,11 @@
 #NUNCA LLAMA A input() NI print(), SOLO DEVUELVE UN MENSAJE DE RESPUESTA
 
 from jarvis.llm import generar
-from jarvis.memoria import cargar_historial, guardar_mensaje
+from jarvis.memoria import (
+    borrar_memoria as borrar_memoria_db,
+    cargar_historial,
+    guardar_mensaje,
+)
 
 SYSTEM_PROMPT = (
     "Eres un asistente personal. "
@@ -36,3 +40,8 @@ class Asistente:
             #persiste el historial en la base de datos
             guardar_mensaje("user", mensaje)
             guardar_mensaje("assistant", respuesta)
+
+    def borrar_memoria(self):
+        """Borra todos los mensajes del disco y de la memoria."""
+        borrar_memoria_db()
+        self.historial = []

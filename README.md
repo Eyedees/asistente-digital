@@ -90,6 +90,8 @@ python main.py
 
 El programa te pedirá que escribas tu petición. La respuesta se imprime en tiempo real. Escribe `salir` (o `exit`), o pulsa `Ctrl + C`, para terminar. El historial se conserva entre ejecuciones en `data/asistente.db`.
 
+Para vaciar el historial desde la propia aplicación, escribe `borrar memoria` (pedirá confirmación).
+
 ## Estructura del proyecto
 
 ```
@@ -129,7 +131,7 @@ El historial se guarda en `data/asistente.db`, una base de datos SQLite que se c
 - Al arrancar, se cargan en contexto los **últimos 20 mensajes**; el resto permanece en disco sin consumir tokens.
 - Cada intercambio (pregunta + respuesta) se guarda al terminar la respuesta.
 - `data/` está incluido en `.gitignore`: tus conversaciones no se versionan ni se suben al repositorio.
-- Para empezar de cero, elimina `data/asistente.db` (o llama a `borrar_memoria()` desde `jarvis.memoria`).
+- Para vaciar el historial, escribe `borrar memoria` dentro de la aplicación (pide confirmación). También puedes eliminar `data/asistente.db`.
 
 ## Variables de entorno
 

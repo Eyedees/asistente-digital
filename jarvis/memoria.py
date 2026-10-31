@@ -42,5 +42,6 @@ def guardar_mensaje(rol, contenido):
 
 def borrar_memoria():
     """Borra todos los mensajes de la base de datos."""
+    iniciar() #con esto hacemos que la función sea segura de llamar incluso si la base de datos no existe todavía
     with _conectar() as con:
         con.execute("DELETE FROM mensajes")
