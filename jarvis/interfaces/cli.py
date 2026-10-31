@@ -1,4 +1,4 @@
-#chat por texto que ya existe en main.py, pero se puede mover a este archivo si se desea
+#interfaz de consola: lee la entrada del usuario e imprime la respuesta en streaming
 
 from jarvis.core import Asistente
 

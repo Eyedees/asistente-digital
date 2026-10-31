@@ -1,4 +1,6 @@
-#listado de todas las librerías instaladas (para cuando la gente quiera/tenga que acceder al código)
+# Freeze completo del entorno de desarrollo (pip freeze).
+# Dependencias directas del proyecto: groq y python-dotenv.
+# El resto son dependencias transitivas necesarias para reproducir el entorno.
 annotated-types==0.8.0
 anyio==4.14.2
 certifi==2026.7.22

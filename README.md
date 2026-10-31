@@ -7,9 +7,11 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 ## Características
 
 - 💬 Conversación por consola en tiempo real (respuesta en streaming, token a token)
+- 🧠 Memoria conversacional durante la sesión (historial recortado a los últimos 20 mensajes)
 - 🔐 Gestión segura de credenciales mediante variables de entorno
+- 🧩 Arquitectura modular: configuración, cliente LLM, lógica de negocio e interfaz separados
 - 🔄 Bucle de conversación continuo
-- 🧠 Modelo: `openai/gpt-oss-120b` (razonamiento + baja latencia vía Groq)
+- 🤖 Modelo: `openai/gpt-oss-120b` (razonamiento + baja latencia vía Groq)
 
 ## Stack técnico
 
@@ -58,7 +60,19 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
    pip install -r requirements.txt
    ```
 
-4. Crea un archivo `.env` en la raíz del proyecto con tu clave de API:
+4. Crea tu archivo `.env` a partir de la plantilla y añade tu clave:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   En Windows (PowerShell):
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+   Después edita `.env` y rellena el valor:
 
    ```
    GROQ_API_KEY=tu_clave_aqui
@@ -72,23 +86,40 @@ Con el entorno virtual activado:
 python main.py
 ```
 
-El programa te pedirá que escribas tu petición. La respuesta se imprime en tiempo real. El ciclo se repite indefinidamente hasta que el usuario interrumpe la ejecución con `Ctrl + C`.
+El programa te pedirá que escribas tu petición. La respuesta se imprime en tiempo real. Escribe `salir` (o `exit`), o pulsa `Ctrl + C`, para terminar.
 
 ## Estructura del proyecto
 
 ```
 asistente-digital/
-├── main.py              # Punto de entrada de la aplicación
-├── requirements.txt      # Dependencias del proyecto
-├── .env                  # Variables de entorno (no versionado)
+├── main.py                  # Punto de entrada de la aplicación
+├── jarvis/
+│   ├── __init__.py
+│   ├── config.py            # Carga y validación de variables de entorno
+│   ├── llm.py               # Cliente de Groq y streaming del modelo
+│   ├── core.py              # Lógica del asistente y memoria conversacional
+│   └── interfaces/
+│       ├── __init__.py
+│       └── cli.py           # Interfaz de línea de comandos
+├── requirements.txt         # Dependencias del proyecto
+├── .env.example             # Plantilla de variables de entorno
 ├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
+### Flujo de una petición
+
+```
+main.py → interfaces/cli.py → core.Asistente → llm.generar → Groq API
+```
+
+Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `core` construye el contexto y gestiona el historial, `llm` habla con el proveedor y `config` centraliza la configuración.
+
 ## Variables de entorno
 
-| Variable        | Descripción                              | Requerida |
-|-----------------|-------------------------------------------|-----------|
+| Variable        | Descripción                                | Requerida |
+|-----------------|--------------------------------------------|-----------|
 | `GROQ_API_KEY`  | Clave de autenticación para la API de Groq | Sí        |
 
 > ⚠️ El archivo `.env` está excluido del control de versiones mediante `.gitignore`. Nunca subas tus credenciales a un repositorio público.
@@ -96,15 +127,15 @@ asistente-digital/
 ## Roadmap
 
 - [x] Fase 1 — Asistente de texto en consola con streaming
-- [ ] Fase 2 — Memoria conversacional (historial de mensajes)
+- [x] Fase 2 — Memoria conversacional (historial de mensajes)
 - [ ] Fase 3 — Entrada por voz (speech-to-text)
 - [ ] Fase 4 — Salida por voz (text-to-speech)
 - [ ] Fase 5 — Interfaz gráfica
 
 ## Licencia
 
-Este proyecto se distribuye bajo la licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto se distribuye bajo la licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## Autor
 
-Desarrollado por [Tu Nombre] como parte de su portfolio de ingeniería de software.
+Desarrollado por **Eyedees** ([@Eyedees](https://github.com/Eyedees)) como parte de su portfolio de ingeniería de software.

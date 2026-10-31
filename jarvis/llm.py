@@ -1,5 +1,5 @@
-#llamada al modelo de lenguaje (actualmente se encuentra en main.py, pero se puede mover a este archivo si se desea)
-#es el único archivo que sabe qué modelo de lenguaje se está usando, y cómo se llama a la API de OpenAI
+#llamada al modelo de lenguaje
+#es el único archivo que sabe qué proveedor y modelo se usan, y cómo se llama a la API
 
 
 from groq import Groq
