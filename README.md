@@ -8,6 +8,7 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 
 - 💬 Conversación por consola en tiempo real (respuesta en streaming, token a token)
 - 🧠 Memoria conversacional persistente en SQLite (recupera el historial entre sesiones)
+- 🎙️ Entrada por voz con faster-whisper local (el audio no sale del dispositivo)
 - ✂️ Contexto acotado a los últimos 20 mensajes para controlar tokens y latencia
 - 🔐 Gestión segura de credenciales mediante variables de entorno
 - 🧩 Arquitectura modular: configuración, cliente LLM, lógica de negocio e interfaz separados
@@ -24,12 +25,16 @@ Este proyecto forma parte de mi portfolio como muestra de integración con APIs 
 | Modelo            | openai/gpt-oss-120b  |
 | Gestión de config | python-dotenv        |
 | Persistencia      | SQLite (stdlib)      |
+| Voz               | faster-whisper local |
+| Audio             | sounddevice          |
 | Tests             | pytest               |
 
 ## Requisitos previos
 
 - Python 3.10 o superior
 - Una cuenta en [Groq Console](https://console.groq.com) con una API key generada
+- Un micrófono para la entrada por voz
+- ~500 MB libres para el modelo `small` de Whisper (se descarga la primera vez)
 
 ## Instalación
 
@@ -94,6 +99,22 @@ El programa te pedirá que escribas tu petición. La respuesta se imprime en tie
 
 Para vaciar el historial desde la propia aplicación, escribe `borrar memoria` (pedirá confirmación).
 
+### Entrada por voz
+
+En modo texto, escribe `voz` y pulsa Enter. Habla y pulsa Enter de nuevo para terminar; el texto reconocido se muestra y se envía al asistente.
+
+También puedes arrancar directamente en modo voz:
+
+```bash
+python main.py --voz
+```
+
+En ese modo, pulsa Enter para hablar o escribe `salir` para terminar.
+
+La primera vez se descarga el modelo local `small` (unos 500 MB). Puedes cambiarlo con `WHISPER_MODEL` (por ejemplo, `base` para que sea más ligero o `medium` para más precisión).
+
+> 🔒 El audio se procesa localmente con faster-whisper; solo el texto transcrito se envía a Groq.
+
 ## Tests
 
 La suite usa `pytest` y no realiza llamadas reales a Groq: el modelo y la base de datos se sustituyen por dobles de prueba.
@@ -122,6 +143,7 @@ asistente-digital/
 │   ├── llm.py               # Cliente de Groq y streaming del modelo
 │   ├── core.py              # Lógica del asistente y gestión del historial
 │   ├── memoria.py           # Persistencia del historial en SQLite
+│   ├── voz.py               # Grabación y transcripción local con faster-whisper
 │   └── interfaces/
 │       ├── __init__.py
 │       └── cli.py           # Interfaz de línea de comandos
@@ -131,7 +153,8 @@ asistente-digital/
 │   ├── test_config.py
 │   ├── test_core.py
 │   ├── test_llm.py
-│   └── test_memoria.py
+│   ├── test_memoria.py
+│   └── test_voz.py
 ├── data/                    # Historial local en SQLite (se crea al ejecutar)
 ├── requirements.txt         # Dependencias del proyecto
 ├── requirements-dev.txt     # Dependencias de desarrollo (pytest)
@@ -148,9 +171,12 @@ asistente-digital/
 main.py → interfaces/cli.py → core.Asistente → llm.generar → Groq API
                                     ↕
                               memoria.py (SQLite)
+
+Modo voz:
+micrófono → voz.py (faster-whisper local) → texto → core.Asistente
 ```
 
-Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `core` construye el contexto y gestiona el historial, `memoria` lo persiste en disco, `llm` habla con el proveedor y `config` centraliza la configuración.
+Cada capa tiene una única responsabilidad: la CLI lee y escribe en consola, `core` construye el contexto y gestiona el historial, `memoria` lo persiste en disco, `voz` graba y transcribe localmente, `llm` habla con el proveedor y `config` centraliza la configuración.
 
 ## Memoria
 
@@ -163,9 +189,13 @@ El historial se guarda en `data/asistente.db`, una base de datos SQLite que se c
 
 ## Variables de entorno
 
-| Variable        | Descripción                                | Requerida |
-|-----------------|--------------------------------------------|-----------|
-| `GROQ_API_KEY`  | Clave de autenticación para la API de Groq | Sí        |
+| Variable               | Descripción                                                | Requerida   |
+|------------------------|------------------------------------------------------------|-------------|
+| `GROQ_API_KEY`         | Clave de autenticación para la API de Groq                 | Sí          |
+| `WHISPER_MODEL`        | Modelo local: `tiny`, `base`, `small`, `medium`, `large-v3` | No (`small`) |
+| `WHISPER_DEVICE`       | Dispositivo de inferencia: `auto`, `cpu`, `cuda`            | No (`auto`)  |
+| `WHISPER_COMPUTE_TYPE` | Precisión: `int8`, `float16`, `default`                     | No (`int8`)  |
+| `WHISPER_LANGUAGE`     | Idioma de la transcripción (código ISO)                     | No (`es`)    |
 
 > ⚠️ El archivo `.env` está excluido del control de versiones mediante `.gitignore`. Nunca subas tus credenciales a un repositorio público.
 
@@ -173,7 +203,7 @@ El historial se guarda en `data/asistente.db`, una base de datos SQLite que se c
 
 - [x] Fase 1 — Asistente de texto en consola con streaming
 - [x] Fase 2 — Memoria conversacional persistente (SQLite)
-- [ ] Fase 3 — Entrada por voz (speech-to-text)
+- [x] Fase 3 — Entrada por voz (speech-to-text local con faster-whisper)
 - [ ] Fase 4 — Salida por voz (text-to-speech)
 - [ ] Fase 5 — Interfaz gráfica
 
