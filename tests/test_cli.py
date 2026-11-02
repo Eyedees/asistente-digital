@@ -63,3 +63,25 @@ def test_borrar_memoria_cancelado(monkeypatch, db_temporal, capsys):
     salida = capsys.readouterr().out
     assert "Memoria no borrada" in salida
     assert len(memoria.cargar_historial(20)) == 2
+
+
+def test_keyboard_interrupt_termina(monkeypatch, db_temporal, capsys):
+    def lanzar(_=""):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(builtins, "input", lanzar)
+
+    cli.main()
+
+    assert "Gero Arte!" in capsys.readouterr().out
+
+
+def test_error_del_modelo_se_muestra(monkeypatch, db_temporal, capsys):
+    def generar(mensajes):
+        raise RuntimeError("fallo simulado")
+        yield  # pragma: no cover
+
+    monkeypatch.setattr(core, "generar", generar)
+    _ejecutar_cli(monkeypatch, ["hola", "salir"])
+
+    assert "[Error: fallo simulado]" in capsys.readouterr().out

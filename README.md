@@ -105,6 +105,12 @@ pip install -r requirements-dev.txt
 python -m pytest
 ```
 
+Para medir la cobertura de `jarvis/`:
+
+```bash
+python -m pytest --cov=jarvis --cov-branch --cov-report=term-missing
+```
+
 ## Estructura del proyecto
 
 ```
@@ -122,7 +128,9 @@ asistente-digital/
 ├── tests/                   # Pruebas automatizadas
 │   ├── conftest.py
 │   ├── test_cli.py
+│   ├── test_config.py
 │   ├── test_core.py
+│   ├── test_llm.py
 │   └── test_memoria.py
 ├── data/                    # Historial local en SQLite (se crea al ejecutar)
 ├── requirements.txt         # Dependencias del proyecto

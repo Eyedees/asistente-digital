@@ -7,10 +7,13 @@ def test_iniciar_crea_la_tabla(db_temporal):
     memoria.iniciar()
 
     assert db_temporal.exists()
-    with sqlite3.connect(db_temporal) as con:
+    con = sqlite3.connect(db_temporal)
+    try:
         tablas = con.execute(
             "SELECT name FROM sqlite_master WHERE type = 'table'"
         ).fetchall()
+    finally:
+        con.close()
     assert ("mensajes",) in tablas
 
 
