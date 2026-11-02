@@ -98,9 +98,11 @@ Para vaciar el historial desde la propia aplicación, escribe `borrar memoria` (
 
 La suite usa `pytest` y no realiza llamadas reales a Groq: el modelo y la base de datos se sustituyen por dobles de prueba.
 
+Ejecuta los tests **desde la raíz del proyecto** y con su entorno virtual activado:
+
 ```bash
 pip install -r requirements-dev.txt
-pytest
+python -m pytest
 ```
 
 ## Estructura del proyecto
